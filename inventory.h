@@ -42,7 +42,7 @@ class LimitedEditionPen : public Pen {
     private:
         std::string editionNumber;
         int totalProduced;
-
+    
     public:
         LimitedEditionPen();
         LimitedEditionPen(std::string brand, std::string name, std::string nibSize,
