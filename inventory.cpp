@@ -124,13 +124,20 @@ void LimitedEditionPen::display() const {
 }
 
 std::string LimitedEditionPen::toCSV() const {
-    // TODO: same idea — you could call Pen::toCSV() and append
-    // ",editionNumber,totalProduced", or write it out fully.
-    // Keep in mind: if your parser only expects 6 fields per row today,
-    // you'll eventually need a way to distinguish LimitedEditionPen rows
-    // when saving/loading. Worth thinking about now, even if you don't
-    // solve it yet.
-    return "";
+    std::string colorsCSV;
+    for(const std::string& color : colors){
+        colorsCSV += color;
+        if (&color != &colors.back()){
+            colorsCSV += "|";
+        }
+    }
+    //-------------------------
+    //FIX THE FORMATTING OF "std::to_string()" LATER!!!!!!! 
+    //-------------------------
+    std::string result = brand + "," + name + "," + nibSize + "," + std::to_string(price) + "," + colorsCSV + "," + std::to_string(quantity)
+        + "," + editionNumber + "," + std::to_string(totalProduced);
+    
+   return result;
 }
 
 // ---------------------------------------------------------
