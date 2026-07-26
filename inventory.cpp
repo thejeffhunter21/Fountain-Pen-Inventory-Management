@@ -16,9 +16,6 @@ Pen::Pen(std::string brand, std::string name, std::string nibSize,
       colors(colors), quantity(quantity) {}
 
 Pen::~Pen() {}
-// Nothing to manually clean up here — no raw pointers as members.
-// It's still virtual so that `delete somePenPtr;` calls the RIGHT
-// destructor even when somePenPtr is a Pen* pointing at a LimitedEditionPen.
 
 // --- Getters ---
 std::string Pen::getBrand() const { return brand; }
@@ -33,6 +30,7 @@ void Pen::setPrice(double newPrice) { price = newPrice; }
 void Pen::setQuantity(int newQuantity) { quantity = newQuantity; }
 
 // --- Stock operations ---
+//no necessary for bool
 void Pen::addStock(int amount) {
     //error bound checking
     if (amount < 0){
@@ -45,7 +43,9 @@ void Pen::addStock(int amount) {
     std::cout << amount << " pens added. Total number is now: " << quantity <<". \n";
 }
 
+//return bool to verify succes/failure
 bool Pen::removeStock(int amount) {
+    //bounds checking
     if (amount < 0){
         std::cout << "Can't be a negative amount. \n";
         return false;
@@ -56,6 +56,7 @@ bool Pen::removeStock(int amount) {
         return false;
     }
 
+    //update
     if (amount <= quantity  ){
         quantity -= amount;
         std::cout << amount << " pens sold. Total number is now: " << quantity <<". \n";
@@ -65,19 +66,32 @@ bool Pen::removeStock(int amount) {
 
 // --- Display ---
 void Pen::display() const {
-    // TODO: print brand, name, nibSize, price, quantity, and colors
-    // (colors is a vector<string> — you'll want a small loop or
-    // std::accumulate-style join to print them nicely, e.g. "Black, Blue, Green")
+    std::cout << brand << " " << name << " " << nibSize << " || " << "$" << price << " || Stock: " << quantity << " || " << "Color: ";
+    for (const std::string& color : colors) {
+        std::cout << color;
+    if (&color != &colors.back()) {
+        std::cout << ", ";
+    }
+    }  
+
+    std::cout << "\n";
+    //Pilot 823 Custom <M> || $10.99 || Stock: 12 || Color: Blue, Grey, Green, ...
 }
 
 // --- Serialization ---
 std::string Pen::toCSV() const {
-    // TODO: this is the reverse of what loadInventoryFromCSV does in
-    // csvparser.cpp. Build a comma-separated line:
-    //   brand,name,nibSize,price,colors,quantity
-    // where colors need to be re-joined with '|' (they were split() on '|'
-    // when loaded — write a small helper to do the opposite of split()).
-    return "";
+    std::string colorsCSV;
+    for(const std::string& color : colors){
+        colorsCSV += color;
+        if (&color != &colors.back()){
+            colorsCSV += "|";
+        }
+    }
+    //-------------------------
+    //FIX THE FORMATTING OF "std::to_string()" LATER!!!!!!! 
+    //-------------------------
+    std::string result = brand + "," + name + "," + nibSize + "," + std::to_string(price) + "," + colorsCSV + "," + std::to_string(quantity);
+    return result;
 }
 
 // ---------------------------------------------------------
@@ -96,9 +110,17 @@ std::string LimitedEditionPen::getEditionNumber() const { return editionNumber; 
 int LimitedEditionPen::getTotalProduced() const { return totalProduced; }
 
 void LimitedEditionPen::display() const {
-    // TODO: consider calling Pen::display() first to reuse the base
-    // printing logic, then print editionNumber / totalProduced on top.
-    // (This is a common inheritance pattern — extend, don't duplicate.)
+    std::cout << brand << " " << name << " " << nibSize << " || "
+              << "$" << price << " || Stock: " << quantity << " || Color: ";
+
+    for (const std::string& color : colors) {
+        std::cout << color;
+    if (&color != &colors.back()) {
+        std::cout << ", ";
+    }
+    }  
+
+    std::cout << " || Edition: " << editionNumber << "/" << totalProduced << "\n";
 }
 
 std::string LimitedEditionPen::toCSV() const {
