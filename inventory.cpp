@@ -147,9 +147,9 @@ std::string LimitedEditionPen::toCSV() const {
 Inventory::Inventory() {}
 
 Inventory::~Inventory() {
-    // TODO: `pens` holds raw Pen* pointers that Inventory owns.
-    // Loop through and `delete` each one, or you'll leak memory every
-    // time an Inventory object is destroyed.
+    for (Pen* p : pens){
+        delete p;
+    }
 }
 
 void Inventory::addPen(Pen* pen) {
