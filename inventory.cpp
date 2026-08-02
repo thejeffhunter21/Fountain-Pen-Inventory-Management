@@ -55,13 +55,9 @@ bool Pen::removeStock(int amount) {
         std::cout << "Not enough pens in stock. \n";
         return false;
     }
-
-    //update
-    if (amount <= quantity  ){
         quantity -= amount;
         std::cout << amount << " pens sold. Total number is now: " << quantity <<". \n";
         return true;
-    }
 }
 
 // --- Display ---
@@ -157,20 +153,23 @@ void Inventory::addPen(Pen* pen) {
 }
 
 Pen* Inventory::findPen(const std::string& brand, const std::string& name, const std::string& nibSize) {
-    // TODO: loop through `pens`, compare each pen's brand/name/nibSize
-    // against the arguments (use the getters you already wrote).
-    // Return the matching Pen* if found, or nullptr if not found.
+    for (Pen* p : pens){
+        if (p->getBrand() == brand && p->getName() == name && p->getNibSize() == nibSize){
+            return p;
+        }
+    }
     return nullptr;
 }
 
 bool Inventory::removePen(const std::string& brand, const std::string& name, const std::string& nibSize) {
-    // TODO:
-    // 1. Find the matching pen (you can reuse findPen, or search directly).
-    // 2. If found: delete the object, THEN erase its entry from the
-    //    `pens` vector (deleting doesn't remove it from the vector —
-    //    that leaves a dangling pointer sitting in `pens` until erased).
-    // 3. Return true if something was removed, false otherwise.
-    return false;
+    Pen* pen = findPen(brand, name, nibSize);
+    if (pen == nullptr) {
+        return false;
+    }
+    auto it = std::find(pens.begin(), pens.end(), pen);
+    delete pen;
+    pens.erase(it);
+    return true;
 }
 
 std::vector<Pen*> Inventory::getAllPens() const {
