@@ -48,8 +48,7 @@ public:
                  const std::string& nibSize, int quantity);
     bool restockPen(Inventory& inv, const std::string& brand, const std::string& name,
                      const std::string& nibSize, int quantity);
-    bool returnPen(Inventory& inv, const std::string& brand, const std::string& name,
-                    const std::string& nibSize, int quantity);
+    bool returnPen(Inventory& inv, int transactionID, int quantity);
     bool changePrice(Inventory& inv, const std::string& brand, const std::string& name,
                       const std::string& nibSize, double newPrice);
 

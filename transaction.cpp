@@ -61,8 +61,8 @@ TransactionLog::~TransactionLog(){
 
 bool TransactionLog::sellPen(Inventory& inv, const std::string& brand, const std::string& name, const std::string& nibSize, int quantity){
         Pen* found = inv.findPen(brand, name, nibSize);
-
         if (found == nullptr){
+            std::cout << "Pen not found.";
             return false;
         }
         else{
@@ -73,11 +73,37 @@ bool TransactionLog::sellPen(Inventory& inv, const std::string& brand, const std
             else{
                 std::cout << "Sale for " << brand << " " << name << " " << nibSize <<" successful! \n"
                 << "Total is: " << found->getPrice() << ".";
+                //increment to get unique ID for each transaction type
                 nextId += 1;
                 found->removeStock(quantity);
+                //instantiate object assigned to pointer data type because normally "new" requires a pointer, and transaction expects pointer 
                 Transaction* newTransaction = new Transaction(nextId, TransactionType::SALE, brand, name, nibSize, quantity, found->getPrice(), found->getPrice(), getTimeStamp()); 
                 transactions.push_back(newTransaction);
                 return true;
             }
         }
     }
+
+bool TransactionLog::restockPen(Inventory& inv, const std::string& brand, const std::string& name,const std::string& nibSize, int quantity){
+    Pen* found = inv.findPen(brand,name,nibSize);
+    if (found == nullptr){
+        std::cout << "Pen not found.";
+        return false;
+    }
+    else{
+        //restocked X units of this pen on this date
+        nextId += 1;
+        found->addStock(quantity);
+        std::cout << "Restocked " << quantity << " units of this pen on " << getTimeStamp() << ". \n";
+        std::cout << "Stock for " << brand << " " << name << " " << nibSize << ": " << found->getQuantity();
+        Transaction* newTransaction = new Transaction(nextId, TransactionType::RESTOCK, brand, name, nibSize, quantity, found->getPrice(), found->getPrice(), getTimeStamp()); 
+        transactions.push_back(newTransaction);
+        return true;
+    }
+}
+
+bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
+    
+
+
+}
