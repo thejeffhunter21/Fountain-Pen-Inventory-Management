@@ -33,6 +33,8 @@ public:
     // getters for every field above
 
     std::string ToCSV() const;  // formats this one record as a CSV line
+    int getID() const;
+    TransactionType getType() const;
 };
 
 class TransactionLog {

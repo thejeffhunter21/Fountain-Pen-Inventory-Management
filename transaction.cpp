@@ -52,6 +52,13 @@ std::string Transaction::ToCSV() const{
     return result;
 }
 
+int Transaction::getID() const {
+    return id;
+}
+TransactionType Transaction::getType() const{
+    return type;
+}
+
 //transactionlog functions
 TransactionLog::~TransactionLog(){
     for (Transaction* p : transactions){
@@ -103,7 +110,10 @@ bool TransactionLog::restockPen(Inventory& inv, const std::string& brand, const 
 }
 
 bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
-    
+    auto it = std::find_if(transactions.begin(), transactions.end(),
+        [transactionID](Transaction* t){
+            return t->getID() == transactionID && t->getType() == TransactionType::SALE;
+        });
 
 
 }
