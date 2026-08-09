@@ -3,6 +3,20 @@
 #include "string"
 #include "algorithm"
 #include "iostream"
+#include "ctime"
+
+//helper function for timestamping
+std::string getTimeStamp() {
+    //data type = current time
+    std::time_t t = std::time(nullptr);\
+    //tm is a struct for prenamed fields; pointer to point to one of those structs = converts address of t to appropriate struct
+    std::tm* brokenDown = std::localtime(&t);
+    char buffer[32];
+    //arugment goes: destination, size limit as max, format, source of the data
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", brokenDown);
+    return buffer;
+}
+
 
 
 //transaction class
@@ -29,3 +43,41 @@ std::string transactionTypeToString(TransactionType type){
     }
     return "Invalid";
 }
+
+// --- Serialization ---
+std::string Transaction::ToCSV() const{
+    std::string result = std::to_string(id) + "," + transactionTypeToString(type) + "," + brand + "," +
+        name + "," + nibSize + "," + std::to_string(quantity) + "," + std::to_string(price) + "," +
+        std::to_string(oldPrice) + "," + timestamp;
+    return result;
+}
+
+//transactionlog functions
+TransactionLog::~TransactionLog(){
+    for (Transaction* p : transactions){
+        delete p;
+    }
+}
+
+bool TransactionLog::sellPen(Inventory& inv, const std::string& brand, const std::string& name, const std::string& nibSize, int quantity){
+        Pen* found = inv.findPen(brand, name, nibSize);
+
+        if (found == nullptr){
+            return false;
+        }
+        else{
+            if (found->getQuantity() < quantity){
+                std::cout << "Not enough stock. Can not sell \n";
+                return false;
+            }
+            else{
+                std::cout << "Sale for " << brand << " " << name << " " << nibSize <<" successful! \n"
+                << "Total is: " << found->getPrice() << ".";
+                nextId += 1;
+                found->removeStock(quantity);
+                Transaction* newTransaction = new Transaction(nextId, TransactionType::SALE, brand, name, nibSize, quantity, found->getPrice(), found->getPrice(), getTimeStamp()); 
+                transactions.push_back(newTransaction);
+                return true;
+            }
+        }
+    }

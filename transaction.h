@@ -32,7 +32,7 @@ public:
 
     // getters for every field above
 
-    std::string logToCSV() const;  // formats this one record as a CSV line
+    std::string ToCSV() const;  // formats this one record as a CSV line
 };
 
 class TransactionLog {
@@ -55,6 +55,7 @@ public:
 
     std::vector<Transaction*> getAllTransactions() const;
     int size() const;
+    void saveInventoryToCSV(const Inventory& inv, const std::string& filename);
 };
 
 #endif
