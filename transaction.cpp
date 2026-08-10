@@ -110,10 +110,23 @@ bool TransactionLog::restockPen(Inventory& inv, const std::string& brand, const 
 }
 
 bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
+    char choice;
     auto it = std::find_if(transactions.begin(), transactions.end(),
+        //capture clause -- takes in variables from outside of scope; parameter that holds a transacation
         [transactionID](Transaction* t){
+            //lambda function to return a bool
             return t->getID() == transactionID && t->getType() == TransactionType::SALE;
         });
 
-
+    if (it == transactions.end()){
+        std::cout << "Transaction not found. Return failed.\n";
+        return false;
+    }
+    else {
+        std::cout << "Transaction found. Proceed with return? Y/N \n";
+        std::cin >> choice;
+        if (choice == 'Y'  || choice == 'y'){
+            std::cout << "Return completed. " << 
+        }
+    }
 }
