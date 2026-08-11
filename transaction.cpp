@@ -125,8 +125,17 @@ bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
     else {
         std::cout << "Transaction found. Proceed with return? Y/N \n";
         std::cin >> choice;
-        if (choice == 'Y'  || choice == 'y'){
-            std::cout << "Return completed. " << 
+        if (choice == 'N' || choice == 'n'){
+            std::cout << "Return cancelled.\n";
+            return false;
+        }
+        else if (choice == 'Y'  || choice == 'y'){
+            Transaction* originalSale = *it; //dereference, actually assign the address
+            std::cout << "Return completed. "; //add in information for the pen
+            return true;
+        }
+        else{
+
         }
     }
 }
