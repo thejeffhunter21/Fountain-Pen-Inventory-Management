@@ -58,6 +58,26 @@ int Transaction::getID() const {
 TransactionType Transaction::getType() const{
     return type;
 }
+std::string Transaction::getBrand() const {
+    return brand;
+}
+
+std::string Transaction::getName() const{
+    return name;
+}
+std::string Transaction::getNibSize() const{
+    return nibSize;
+}
+int Transaction::getQuantity() const{
+    return quantity;
+}
+double Transaction::getPrice() const{
+    return price;
+}
+double Transaction::getOldPrice() const{
+    return oldPrice;
+}
+
 
 //transactionlog functions
 TransactionLog::~TransactionLog(){
@@ -123,19 +143,37 @@ bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
         return false;
     }
     else {
+        while (true){
         std::cout << "Transaction found. Proceed with return? Y/N \n";
         std::cin >> choice;
         if (choice == 'N' || choice == 'n'){
             std::cout << "Return cancelled.\n";
             return false;
-        }
+        } 
         else if (choice == 'Y'  || choice == 'y'){
-            Transaction* originalSale = *it; //dereference, actually assign the address
-            std::cout << "Return completed. "; //add in information for the pen
-            return true;
+            Transaction* originalSale = *it; //dereference, actually assign the address. original sale now holds the pen's information
+            Pen* found = inv.findPen(originalSale->getBrand(), originalSale->getName(), originalSale->getNibSize());
+            if (found == nullptr){
+                std::cout << "No pen found.\n";
+                return false;
+            }
+            else if(quantity > originalSale->getQuantity() || quantity<=0){
+                std::cout << "Invalid quantity to return\n";
+                return false;
+            }
+            else if(quantity == originalSale->getQuantity()){
+                nextId+=1;
+                found->addStock(quantity);
+                Transaction* newTransaction = new Transaction(nextId, TransactionType::RETURN, originalSale->getBrand(), originalSale->getName(), originalSale->getNibSize(), quantity, found->getPrice(), originalSale->getPrice(), getTimeStamp()); 
+                transactions.push_back(newTransaction);
+                std::cout << "Return for " << originalSale->getBrand() << " " << originalSale->getName() << " " << originalSale->getNibSize() << " completed.\n";
+                std::cout << "Total refunded: " << originalSale->getOldPrice(); 
+                return true;
+            }
+            else{
+                std::cout << "Invalid choice. Please enter Y or N.\n";
+            }
         }
-        else{
-
         }
     }
 }

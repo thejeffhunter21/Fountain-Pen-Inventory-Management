@@ -34,6 +34,12 @@ public:
 
     std::string ToCSV() const;  // formats this one record as a CSV line
     int getID() const;
+    std::string getBrand() const;
+    std::string getName() const;
+    std::string getNibSize() const;
+    int getQuantity() const;
+    double getPrice() const;
+    double getOldPrice() const;
     TransactionType getType() const;
 };
 
