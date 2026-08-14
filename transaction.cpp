@@ -183,17 +183,36 @@ bool TransactionLog::changePrice(Inventory& inv, const std::string& brand, const
         std::cout << "Pen not found\n";
         return false; 
     }
+
+    //first find the pen. if not found, exit program. if found
+    //check the price. if less than zero try again. if equal to zero, double check for confirmation that it will be free
+    //
+    else if (newPrice < 0){
+        std::cout << "Invalid price "
+    }
     else{
-        if (found->getPrice() == newPrice){
-            std::cout << "Same price. No update made";
-        }
-        else{
-            nextId+=1;
-            double oldPrice = found->getPrice();
-            found->setPrice(newPrice);
-            Transaction* newTransaction = new Transaction(nextId,TransactionType::PRICE_CHANGE, brand, name, nibSize, found->getQuantity(), newPrice, oldPrice, getTimeStamp());
-            transactions.push_back(newTransaction);
-            return true;
-        }
+        while (true){
+            char choice;
+            std::cout << "Confirm? Y/N\n";
+            std::cin >> choice;
+            if (choice == 'N' || choice == 'n'){
+                std::cout << "Operation cancelled.\n";
+                return false;
+            }
+            else if (choice == 'Y' || choice == 'y'){
+
+                else{
+                    nextId+=1;
+                    double oldPrice = found->getPrice();
+                    found->setPrice(newPrice);
+                    Transaction* newTransaction = new Transaction(nextId,TransactionType::PRICE_CHANGE, brand, name, nibSize, found->getQuantity(), newPrice, oldPrice, getTimeStamp());
+                    transactions.push_back(newTransaction);
+                    return true;
+                }
+            }
+            else{
+                std::cout << "Invalid choice. Please type Y or N\n";
+            }
+    }
     }
 }
