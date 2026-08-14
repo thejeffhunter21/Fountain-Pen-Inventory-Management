@@ -61,7 +61,6 @@ TransactionType Transaction::getType() const{
 std::string Transaction::getBrand() const {
     return brand;
 }
-
 std::string Transaction::getName() const{
     return name;
 }
@@ -157,23 +156,44 @@ bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
                 std::cout << "No pen found.\n";
                 return false;
             }
-            else if(quantity > originalSale->getQuantity() || quantity<=0){
+            else if(quantity != originalSale->getQuantity()){
                 std::cout << "Invalid quantity to return\n";
                 return false;
             }
-            else if(quantity == originalSale->getQuantity()){
+            else{
                 nextId+=1;
-                found->addStock(quantity);
-                Transaction* newTransaction = new Transaction(nextId, TransactionType::RETURN, originalSale->getBrand(), originalSale->getName(), originalSale->getNibSize(), quantity, found->getPrice(), originalSale->getPrice(), getTimeStamp()); 
+                found->addStock(quantity); //whenever have time, work on partial returns 
+                Transaction* newTransaction = new Transaction(nextId, TransactionType::RETURN, originalSale->getBrand(), originalSale->getName(), originalSale->getNibSize(), quantity, originalSale->getPrice(), originalSale->getPrice(), getTimeStamp()); 
                 transactions.push_back(newTransaction);
                 std::cout << "Return for " << originalSale->getBrand() << " " << originalSale->getName() << " " << originalSale->getNibSize() << " completed.\n";
-                std::cout << "Total refunded: " << originalSale->getOldPrice(); 
+                std::cout << "Total refunded: " << originalSale->getOldPrice() * quantity; 
                 return true;
             }
-            else{
-                std::cout << "Invalid choice. Please enter Y or N.\n";
-            }
         }
+        else{
+            std::cout << "Invalid choice. Please enter Y or N.\n";
+        }
+        }
+    }
+}
+
+bool TransactionLog::changePrice(Inventory& inv, const std::string& brand, const std::string& name,const std::string& nibSize, double newPrice){
+    Pen* found = inv.findPen(brand,name,nibSize);
+    if (found == nullptr){
+        std::cout << "Pen not found\n";
+        return false; 
+    }
+    else{
+        if (found->getPrice() == newPrice){
+            std::cout << "Same price. No update made";
+        }
+        else{
+            nextId+=1;
+            double oldPrice = found->getPrice();
+            found->setPrice(newPrice);
+            Transaction* newTransaction = new Transaction(nextId,TransactionType::PRICE_CHANGE, brand, name, nibSize, found->getQuantity(), newPrice, oldPrice, getTimeStamp());
+            transactions.push_back(newTransaction);
+            return true;
         }
     }
 }
