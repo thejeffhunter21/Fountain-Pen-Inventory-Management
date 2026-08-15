@@ -42,3 +42,15 @@ Inventory loadInventoryFromCSV(const std::string& filename) {
 
     return inv;
 }
+
+void saveInventoryToCSV(const Inventory& inv, const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        return;
+    }
+
+    for (Pen* pen : inv.getAllPens()) {
+        file << pen->toCSV() << "\n";
+    }
+}

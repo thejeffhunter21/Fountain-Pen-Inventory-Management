@@ -62,7 +62,7 @@ public:
 
     std::vector<Transaction*> getAllTransactions() const;
     int size() const;
-    void saveInventoryToCSV(const Inventory& inv, const std::string& filename);
+    void saveTransactionsToCSV(const std::string& filename);
 };
 
 

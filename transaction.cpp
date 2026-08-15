@@ -4,6 +4,7 @@
 #include "algorithm"
 #include "iostream"
 #include "ctime"
+#include "fstream"
 
 //helper function for timestamping
 std::string getTimeStamp() {
@@ -177,42 +178,62 @@ bool TransactionLog::returnPen(Inventory& inv, int transactionID, int quantity){
     }
 }
 
-bool TransactionLog::changePrice(Inventory& inv, const std::string& brand, const std::string& name,const std::string& nibSize, double newPrice){
-    Pen* found = inv.findPen(brand,name,nibSize);
+bool TransactionLog::changePrice(Inventory& inv, const std::string& brand, const std::string& name, const std::string& nibSize, double newPrice){
+    Pen* found = inv.findPen(brand, name, nibSize);
     if (found == nullptr){
         std::cout << "Pen not found\n";
-        return false; 
+        return false;
+    }
+    if (newPrice < 0){
+        std::cout << "Invalid price \n";
+        return false;
     }
 
-    //first find the pen. if not found, exit program. if found
-    //check the price. if less than zero try again. if equal to zero, double check for confirmation that it will be free
-    //
-    else if (newPrice < 0){
-        std::cout << "Invalid price "
-    }
-    else{
-        while (true){
-            char choice;
-            std::cout << "Confirm? Y/N\n";
-            std::cin >> choice;
-            if (choice == 'N' || choice == 'n'){
-                std::cout << "Operation cancelled.\n";
-                return false;
-            }
-            else if (choice == 'Y' || choice == 'y'){
+    //compact if/else thing
+    //? -> what to use if condition is true
+    //: -> what to use otherwise
+    std::string prompt = (newPrice == 0)
+        ? "This will make the item free. Confirm ? Y/N\n"
+        : "Confirm? Y/N\n";
 
-                else{
-                    nextId+=1;
-                    double oldPrice = found->getPrice();
-                    found->setPrice(newPrice);
-                    Transaction* newTransaction = new Transaction(nextId,TransactionType::PRICE_CHANGE, brand, name, nibSize, found->getQuantity(), newPrice, oldPrice, getTimeStamp());
-                    transactions.push_back(newTransaction);
-                    return true;
-                }
-            }
-            else{
-                std::cout << "Invalid choice. Please type Y or N\n";
-            }
-    }
+    char choice;
+    while (true){
+        std::cout << prompt;
+        std::cin >> choice;
+        if (choice == 'N' || choice == 'n'){
+            std::cout << "Operation cancelled.\n";
+            return false;
+        }
+        if (choice == 'Y' || choice == 'y'){
+            nextId += 1;
+            double oldPrice = found->getPrice();
+            found->setPrice(newPrice);
+            transactions.push_back(new Transaction(nextId, TransactionType::PRICE_CHANGE, brand, name, nibSize, found->getQuantity(), newPrice, oldPrice, getTimeStamp()));
+            std::cout << brand << " " << name << " " << nibSize << " is now: " << newPrice << ".\n"
+                      << "Old price: " << oldPrice << ".\n";
+            return true;
+        }
+        std::cout << "Invalid choice. Please type Y or N\n";
     }
 }
+
+void TransactionLog::saveTransactionsToCSV(const std::string& filename){
+    std::ofstream file(filename);
+    if (!file.is_open()){
+        std::cout << "Could not open file: " << filename << "\n";
+        return;
+    }
+
+    for (Transaction* t : transactions){
+        file << t->ToCSV() << "\n";
+    }
+}
+
+std::vector<Transaction*> TransactionLog::getAllTransactions() const{
+    return transactions;
+}
+
+int TransactionLog::size() const{
+    return transactions.size();
+}
+
